@@ -251,27 +251,24 @@ class TodoApp {
                     : '<span class="badge badge-warning">Pending</span>';
 
             return `
-                <tr class="${task.status === 'completed' ? 'opacity-60' : ''} ${isBeingEdited ? 'bg-primary/20' : ''}">
-                    <td class="${task.status === 'completed' ? 'line-through' : ''} ${isBeingEdited ? 'font-semibold' : ''}">${task.text}</td>
+                <tr class="${task.status === 'completed' ? 'opacity-60' : ''}">
+                    <td class="${task.status === 'completed' ? 'line-through' : ''}">${task.text}</td>
                     <td class="${isOverdue ? 'text-error' : ''}">${this.formatDate(task.dueDate)}</td>
                     <td>${statusBadge}</td>
                     <td class="flex gap-2">
-                        <button class="btn btn-sm btn-info text-white ${isBeingEdited ? 'btn-disabled' : ''}" 
+                        <button class="btn btn-sm btn-info text-white" 
                                 title="Edit" 
-                                onclick="app.editTask(${task.id})"
-                                ${isBeingEdited ? 'disabled' : ''}>
+                                onclick="app.editTask(${task.id})">
                             <i class='bx bx-edit-alt'></i>
                         </button>
-                        <button class="btn btn-sm ${task.status === 'completed' ? 'btn-warning' : 'btn-success'} text-white ${isBeingEdited ? 'btn-disabled' : ''}" 
+                        <button class="btn btn-sm ${task.status === 'completed' ? 'btn-warning' : 'btn-success'} text-white" 
                                 title="${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Complete'}"
-                                onclick="app.toggleTaskStatus(${task.id})"
-                                ${isBeingEdited ? 'disabled' : ''}>
+                                onclick="app.toggleTaskStatus(${task.id})">
                             <i class='bx ${task.status === 'completed' ? 'bx-undo' : 'bx-check'}'></i>
                         </button>
-                        <button class="btn btn-sm btn-error text-white ${isBeingEdited ? 'btn-disabled' : ''}" 
+                        <button class="btn btn-sm btn-error text-white" 
                                 title="Delete" 
-                                onclick="app.deleteTask(${task.id})"
-                                ${isBeingEdited ? 'disabled' : ''}>
+                                onclick="app.deleteTask(${task.id})">
                             <i class='bx bx-trash'></i>
                         </button>
                     </td>
