@@ -25,6 +25,13 @@
       </button>
     </div>
 
+    <!-- Edit mode notification -->
+    <div id="editNotification" class="alert alert-info hidden">
+      <i class='bx bx-info-circle'></i>
+      <span>Edit mode: Make changes above and click the check button to save</span>
+      <button id="cancelEditInline" class="btn btn-sm btn-outline">Cancel</button>
+    </div>
+
     <!-- Filter + Delete All -->
     <div class="flex justify-between">
       <select id="filterSelect" class="select select-bordered select-sm">
@@ -60,25 +67,10 @@
       <p class="text-base-content/60">No tasks found. Add your first task!</p>
     </div>
 
-    <!-- Edit Modal -->
-    <div id="editModal" class="modal">
-      <div class="modal-box">
-        <h3 class="font-bold text-lg mb-4">Edit Task</h3>
-        <div class="space-y-4">
-          <input type="text" id="editTaskInput" placeholder="Task name..." class="input input-bordered w-full" />
-          <input type="date" id="editDateInput" class="input input-bordered w-full" />
-        </div>
-        <div class="modal-action">
-          <button id="saveEditBtn" class="btn btn-primary">Save</button>
-          <button id="cancelEditBtn" class="btn btn-outline">Cancel</button>
-        </div>
-      </div>
-    </div>
-<footer class="text-center text-sm text-base-content/60 mt-6">
-    Made with 👉(*′′′>﹏<′′′*👈) by Aby Prastya Palgunadi
-  </div>
-
-
+    <footer class="text-center text-sm text-base-content/60 mt-6">
+      Made with 👉(*′′′>﹏<′′′*👈) by Aby Prastya Palgunadi
+    </footer>
+</div>
 <script src="js/script.js"></script>
 
 </body>

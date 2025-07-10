@@ -4,6 +4,7 @@ class TodoApp {
         this.tasks = [];
         this.currentFilter = 'all';
         this.editingTaskId = null;
+        this.isEditMode = false;
 
         // Panggil fungsi inisialisasi aplikasi
         this.init();
@@ -17,12 +18,24 @@ class TodoApp {
     }
 
     bindEvents() {
-        // Event saat tombol "Add" diklik
-        document.getElementById('addBtn').addEventListener('click', () => this.addTask());
+        // Event saat tombol "Add/Save" diklik
+        document.getElementById('addBtn').addEventListener('click', () => {
+            if (this.isEditMode) {
+                this.saveInlineEdit();
+            } else {
+                this.addTask();
+            }
+        });
 
         // Event saat user menekan Enter di input
         document.getElementById('taskInput').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') this.addTask();
+            if (e.key === 'Enter') {
+                if (this.isEditMode) {
+                    this.saveInlineEdit();
+                } else {
+                    this.addTask();
+                }
+            }
         });
 
         // Event saat user mengubah filter (all/pending/completed)
@@ -34,16 +47,8 @@ class TodoApp {
         // Event saat tombol "Delete All" diklik
         document.getElementById('deleteAllBtn').addEventListener('click', () => this.deleteAllTasks());
 
-        // Event tombol simpan di modal edit
-        document.getElementById('saveEditBtn').addEventListener('click', () => this.saveEdit());
-
-        // Event tombol batal di modal edit
-        document.getElementById('cancelEditBtn').addEventListener('click', () => this.closeEditModal());
-        
-        // Tutup modal edit jika klik di luar modal
-        document.getElementById('editModal').addEventListener('click', (e) => {
-            if (e.target.id === 'editModal') this.closeEditModal();
-        });
+        // Event tombol batal edit inline
+        document.getElementById('cancelEditInline').addEventListener('click', () => this.cancelInlineEdit());
     }
 
     addTask() {
@@ -103,19 +108,34 @@ class TodoApp {
     editTask(id) {
         const task = this.tasks.find(task => task.id === id);
         if (task) {
-            // Simpan ID tugas yang sedang diedit
+            // Masuk ke mode edit
+            this.isEditMode = true;
             this.editingTaskId = id;
 
-            // Isi modal edit dengan data tugas
-            document.getElementById('editTaskInput').value = task.text;
-            document.getElementById('editDateInput').value = task.dueDate || '';
-            document.getElementById('editModal').checked = true; // Tampilkan modal
+            // Isi input dengan data tugas yang akan diedit
+            document.getElementById('taskInput').value = task.text;
+            document.getElementById('dateInput').value = task.dueDate || '';
+
+            // Ubah tombol + menjadi centang
+            const addBtn = document.getElementById('addBtn');
+            addBtn.innerHTML = '<i class="bx bx-check text-xl"></i>';
+            addBtn.classList.remove('btn-primary');
+            addBtn.classList.add('btn-success');
+
+            // Tampilkan notifikasi edit mode
+            document.getElementById('editNotification').classList.remove('hidden');
+
+            // Focus pada input
+            document.getElementById('taskInput').focus();
         }
     }
 
-    saveEdit() {
-        const taskText = document.getElementById('editTaskInput').value.trim();
-        const dueDate = document.getElementById('editDateInput').value;
+    saveInlineEdit() {
+        const taskInput = document.getElementById('taskInput');
+        const dateInput = document.getElementById('dateInput');
+        
+        const taskText = taskInput.value.trim();
+        const dueDate = dateInput.value;
 
         if (!taskText) {
             this.showAlert('Please enter a task!', 'warning');
@@ -129,15 +149,32 @@ class TodoApp {
             task.dueDate = dueDate || null;
             this.saveTasks();
             this.render();
-            this.closeEditModal();
+            this.exitEditMode();
             this.showAlert('Task updated!', 'success');
         }
     }
 
-    closeEditModal() {
-        // Tutup modal dan reset ID edit
-        document.getElementById('editModal').checked = false;
+    cancelInlineEdit() {
+        // Kosongkan input dan keluar dari mode edit
+        document.getElementById('taskInput').value = '';
+        document.getElementById('dateInput').value = '';
+        this.exitEditMode();
+        this.showAlert('Edit cancelled', 'info');
+    }
+
+    exitEditMode() {
+        // Keluar dari mode edit
+        this.isEditMode = false;
         this.editingTaskId = null;
+
+        // Kembalikan tombol ke bentuk semula
+        const addBtn = document.getElementById('addBtn');
+        addBtn.innerHTML = '<i class="bx bx-plus text-xl"></i>';
+        addBtn.classList.remove('btn-success');
+        addBtn.classList.add('btn-primary');
+
+        // Sembunyikan notifikasi edit mode
+        document.getElementById('editNotification').classList.add('hidden');
     }
 
     deleteAllTasks() {
@@ -204,6 +241,7 @@ class TodoApp {
         // Render setiap baris tugas ke dalam tabel
         tbody.innerHTML = filteredTasks.map(task => {
             const isOverdue = this.isOverdue(task.dueDate) && task.status === 'pending';
+            const isBeingEdited = this.isEditMode && this.editingTaskId === task.id;
 
             // Tentukan lencana status
             const statusBadge = task.status === 'completed' 
@@ -213,20 +251,27 @@ class TodoApp {
                     : '<span class="badge badge-warning">Pending</span>';
 
             return `
-                <tr class="${task.status === 'completed' ? 'opacity-60' : ''}">
-                    <td class="${task.status === 'completed' ? 'line-through' : ''}">${task.text}</td>
+                <tr class="${task.status === 'completed' ? 'opacity-60' : ''} ${isBeingEdited ? 'bg-primary/20' : ''}">
+                    <td class="${task.status === 'completed' ? 'line-through' : ''} ${isBeingEdited ? 'font-semibold' : ''}">${task.text}</td>
                     <td class="${isOverdue ? 'text-error' : ''}">${this.formatDate(task.dueDate)}</td>
                     <td>${statusBadge}</td>
                     <td class="flex gap-2">
-                        <button class="btn btn-sm btn-info text-white" title="Edit" onclick="app.editTask(${task.id})">
+                        <button class="btn btn-sm btn-info text-white ${isBeingEdited ? 'btn-disabled' : ''}" 
+                                title="Edit" 
+                                onclick="app.editTask(${task.id})"
+                                ${isBeingEdited ? 'disabled' : ''}>
                             <i class='bx bx-edit-alt'></i>
                         </button>
-                        <button class="btn btn-sm ${task.status === 'completed' ? 'btn-warning' : 'btn-success'} text-white" 
+                        <button class="btn btn-sm ${task.status === 'completed' ? 'btn-warning' : 'btn-success'} text-white ${isBeingEdited ? 'btn-disabled' : ''}" 
                                 title="${task.status === 'completed' ? 'Mark as Pending' : 'Mark as Complete'}"
-                                onclick="app.toggleTaskStatus(${task.id})">
+                                onclick="app.toggleTaskStatus(${task.id})"
+                                ${isBeingEdited ? 'disabled' : ''}>
                             <i class='bx ${task.status === 'completed' ? 'bx-undo' : 'bx-check'}'></i>
                         </button>
-                        <button class="btn btn-sm btn-error text-white" title="Delete" onclick="app.deleteTask(${task.id})">
+                        <button class="btn btn-sm btn-error text-white ${isBeingEdited ? 'btn-disabled' : ''}" 
+                                title="Delete" 
+                                onclick="app.deleteTask(${task.id})"
+                                ${isBeingEdited ? 'disabled' : ''}>
                             <i class='bx bx-trash'></i>
                         </button>
                     </td>
@@ -255,23 +300,24 @@ class TodoApp {
     }
 
     saveTasks() {
-        // Simpan data ke localStorage (bukan ke database sungguhan)
-        try {
-            localStorage.setItem('todoTasks', JSON.stringify(this.tasks));
-        } catch (e) {
-            console.warn('Could not save tasks to localStorage');
+        // Simpan data ke localStorage
+        const tasks = JSON.stringify(this.tasks);
+        // Simulasi localStorage dengan variabel global
+        if (typeof window !== 'undefined') {
+            window.todoTasksData = tasks;
         }
     }
 
     loadTasks() {
-        // Ambil data dari localStorage
-        try {
-            const saved = localStorage.getItem('todoTasks');
-            if (saved) {
-                this.tasks = JSON.parse(saved);
+        // Ambil data dari localStorage simulasi
+        if (typeof window !== 'undefined' && window.todoTasksData) {
+            try {
+                this.tasks = JSON.parse(window.todoTasksData);
+            } catch (e) {
+                console.warn('Could not load tasks');
+                this.tasks = [];
             }
-        } catch (e) {
-            console.warn('Could not load tasks from localStorage');
+        } else {
             this.tasks = [];
         }
     }
