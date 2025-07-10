@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="luxury">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List App By Aby</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+    <link href='https://cdn.boxicons.com/fonts/basic/boxicons.min.css' rel='stylesheet'>
+</head>
+<body class="bg-base-100 min-h-screen flex items-center justify-center p-4">
+<div class="w-full max-w-3xl bg-base-300 text-base-content border border-primary rounded-lg p-6 space-y-6 shadow-lg " style="box-shadow: 0 0 20px 20px rgba(255, 186, 186, 0.1);">
+
+    <!-- Judul -->
+    <h1 class="text-3xl font-bold text-center">To-Do List App</h1>
+
+    <!-- Form Baris: Input + Date + Button -->
+    <div class="flex flex-col sm:flex-row gap-4">
+      <input type="text" id="taskInput" placeholder="Add a to-do..." class="input input-bordered w-full" />
+      <input type="date" id="dateInput" placeholder="mm/dd/yyyy" class="input input-bordered w-full" />
+      <button id="addBtn" class="btn btn-primary w-full sm:w-auto px-4">
+        <i class='bx bx-plus text-xl'></i>
+      </button>
+    </div>
+
+    <!-- Filter + Delete All -->
+    <div class="flex justify-between">
+      <select id="filterSelect" class="select select-bordered select-sm">
+        <option value="all">All Tasks</option>
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+      </select>
+      <button id="deleteAllBtn" class="btn btn-error btn-sm">
+        <i class='bx bx-trash text-lg mr-1'></i> Delete All
+      </button>
+    </div>
+
+    <!-- Tabel Tugas -->
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="taskTableBody">
+          <!-- Tasks akan ditambahkan di sini secara dinamis -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="text-center py-8 hidden">
+      <i class='bx bx-list-ul text-6xl text-base-content/30 mb-4'></i>
+      <p class="text-base-content/60">No tasks found. Add your first task!</p>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+      <div class="modal-box">
+        <h3 class="font-bold text-lg mb-4">Edit Task</h3>
+        <div class="space-y-4">
+          <input type="text" id="editTaskInput" placeholder="Task name..." class="input input-bordered w-full" />
+          <input type="date" id="editDateInput" class="input input-bordered w-full" />
+        </div>
+        <div class="modal-action">
+          <button id="saveEditBtn" class="btn btn-primary">Save</button>
+          <button id="cancelEditBtn" class="btn btn-outline">Cancel</button>
+        </div>
+      </div>
+    </div>
+<footer class="text-center text-sm text-base-content/60 mt-6">
+    Made with 👉(*′′′>﹏<′′′*👈) by Aby Prastya Palgunadi
+  </div>
+
+
+<script src="js/script.js"></script>
+
+</body>
+</html>
